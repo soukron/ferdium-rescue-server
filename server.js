@@ -205,7 +205,7 @@ function scanPartitions(ferdiumDir, recipeCatalog) {
         userId: 1,
         workspaces: [],
         trapLinkClicks: false,
-        useFavicon: true,
+        useFavicon: false,
       });
     } else if (!recipe) {
       unidentified.push(uuid);
