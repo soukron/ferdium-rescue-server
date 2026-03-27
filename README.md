@@ -85,6 +85,9 @@ Yes. Just restore the backup of `settings.json` or change the server URL in Ferd
 **Q: Some services weren't detected. What do I do?**
 Delete `data.json` (created next to `server.js`) and restart the server to re-scan. If a service still isn't detected, you can manually add it through Ferdium's "Add Service" interface while the local server is running.
 
+**Q: There are some services that I don't use anymore. Why is that?**
+The scan process can detect services but there's no way to know which ones were being used. That's part of the data that the server hosted. Therefore you might see services even if you already removed but they remained in the local filesystem.
+
 **Q: Does this work on Windows?**
 Yes. It uses only built-in Node.js modules and auto-detects the Windows data directory (`%APPDATA%\Ferdium`).
 
