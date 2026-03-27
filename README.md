@@ -2,11 +2,7 @@
 
 A zero-dependency, single-file local server that replaces `api.ferdium.org` when it's down. It auto-detects your installed services and keeps Ferdium running entirely offline.
 
----
-
-**[Scroll down for Spanish / Desplaza hacia abajo para Espanol](#espanol)**
-
----
+NOTE: Use this project at your complete responsability. This code has been vibed coded to help in an emergency where Ferdium servers are having a bad time and I needed to make it work at any cost. For sure, it's not part of Ferdium base code and I'm not a developer of Ferdium team. 
 
 ## What does this do?
 
@@ -92,87 +88,6 @@ Delete `data.json` (created next to `server.js`) and restart the server to re-sc
 **Q: Does this work on Windows?**
 Yes. It uses only built-in Node.js modules and auto-detects the Windows data directory (`%APPDATA%\Ferdium`).
 
----
-
-<a name="espanol"></a>
-
-# Servidor de Rescate Local para Ferdium
-
-Un servidor local de un solo archivo, sin dependencias, que reemplaza `api.ferdium.org` cuando esta caido. Detecta automaticamente tus servicios instalados y mantiene Ferdium funcionando sin conexion al servidor oficial.
-
-## Que hace esto?
-
-Ferdium depende de `api.ferdium.org` para cargar tus servicios (WhatsApp, Telegram, Slack, etc.). Cuando ese servidor falla, **Ferdium ni siquiera arranca**. Este servidor de rescate corre en tu maquina y responde todas las llamadas API que Ferdium necesita, usando datos que ya estan en tu ordenador.
-
-## Requisitos
-
-- **Node.js 18 o superior** (comprueba con `node --version`)
-- Nada mas. No necesitas `npm install` ni dependencias.
-
-## Inicio rapido
-
-### 1. Descarga `server.js`
-
-Guarda el archivo en cualquier carpeta de tu ordenador.
-
-### 2. Ejecutalo
-
-```bash
-node server.js
-```
-
-Eso es todo. El servidor:
-- Detecta automaticamente tus datos de Ferdium
-- Parchea `settings.json` para apuntar a localhost (creando un backup)
-- Escanea tus servicios
-- Arranca la API
-
-Ahora abre Ferdium. Todo se conecta automaticamente.
-
-### 3. Manten el servidor corriendo
-
-Ferdium necesita este servidor ejecutandose en segundo plano mientras lo uses. Pulsa `Ctrl+C` para detenerlo cuando acabes.
-
-## Como funciona
-
-1. **Encuentra tus datos de Ferdium** automaticamente segun tu sistema operativo
-2. **Lee tus recetas instaladas** (la carpeta `recipes/` en los datos de Ferdium)
-3. **Escanea las particiones del navegador** para asociar cada UUID de servicio con una receta, extrayendo URLs de los archivos de almacenamiento local
-4. **Sirve la API de Ferdium** en localhost, devolviendo tus servicios, features y recetas
-
-Todas tus sesiones (cookies, tokens de login) se mantienen porque el servidor usa exactamente los mismos UUIDs que tus particiones existentes.
-
-## Configuracion
-
-| Variable de entorno | Por defecto | Descripcion |
-|---|---|---|
-| `FERDIUM_PORT` | `14569` | Puerto del servidor |
-| `FERDIUM_DATA_DIR` | *(auto-detectado)* | Ruta al directorio de datos de Ferdium |
-
-Ejemplo:
-```bash
-FERDIUM_PORT=8080 node server.js
-```
-
-## Revertir cambios
-
-El servidor crea un backup de tu configuracion la primera vez que lo ejecutas. Lo encontraras en:
-```
-<datos de Ferdium>/config/settings.json.backup-<timestamp>
-```
-Copialo de vuelta a `settings.json` para restaurar la URL original del servidor.
-
-## Preguntas frecuentes
-
-**P: Perdere mi historial de chats / sesiones?**
-No. Las sesiones estan almacenadas en particiones del navegador en tu disco. Este servidor solo le dice a Ferdium que servicios cargar; no toca los datos de sesion.
-
-**P: Puedo volver a `api.ferdium.org` despues?**
-Si. Restaura el backup de `settings.json` o cambia la URL del servidor en los ajustes de Ferdium.
-
-**P: Algunos servicios no se detectaron. Que hago?**
-Borra `data.json` (creado junto a `server.js`) y reinicia el servidor para re-escanear. Si un servicio sigue sin detectarse, puedes anadirlo manualmente desde la interfaz "Anadir Servicio" de Ferdium mientras el servidor local esta corriendo.
-
-## Licencia
+## License
 
 MIT
