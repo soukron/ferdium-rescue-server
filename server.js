@@ -556,24 +556,39 @@ function main() {
   // Auto-patch settings.json to point to this server
   const settingsPath = path.join(ferdiumDir, 'config', 'settings.json');
   const localUrl = `http://localhost:${PORT}`;
+  let settingsBackupPath = null;
 
   if (fs.existsSync(settingsPath)) {
     const settings = JSON.parse(fs.readFileSync(settingsPath, 'utf-8'));
 
     if (settings.server !== localUrl) {
-      const backupPath = settingsPath + '.backup-' + Date.now();
-      fs.copyFileSync(settingsPath, backupPath);
+      settingsBackupPath = settingsPath + '.backup-' + Date.now();
+      fs.copyFileSync(settingsPath, settingsBackupPath);
       const oldServer = settings.server;
       settings.server = localUrl;
       fs.writeFileSync(settingsPath, JSON.stringify(settings, null, 2), 'utf-8');
       log(`Patched settings.json:`);
       log(`  "${oldServer}" -> "${localUrl}"`);
-      log(`  Backup: ${backupPath}`);
+      log(`  Backup: ${settingsBackupPath}`);
     } else {
       log('Settings already point to this server.');
     }
   }
   log('');
+
+  function restoreSettings() {
+    if (!settingsBackupPath) return;
+    try {
+      if (fs.existsSync(settingsBackupPath)) {
+        fs.copyFileSync(settingsBackupPath, settingsPath);
+        log('Restored settings.json to the original API server.');
+      } else {
+        log('WARNING: settings backup not found; settings.json was not restored.');
+      }
+    } catch (err) {
+      log(`ERROR: Failed to restore settings.json: ${err.message}`);
+    }
+  }
 
   const data = initData(ferdiumDir);
   const handle = createRoutes(data);
@@ -610,13 +625,34 @@ function main() {
     }
   });
 
+  let shuttingDown = false;
+
+  function shutdown() {
+    if (shuttingDown) return;
+    shuttingDown = true;
+
+    console.log();
+    log('Shutting down...');
+    restoreSettings();
+
+    server.close(() => process.exit(0));
+    setTimeout(() => process.exit(0), 1000).unref();
+  }
+
+  process.on('SIGINT', shutdown);
+  process.on('SIGTERM', shutdown);
+
   server.listen(PORT, () => {
     log('');
     log(`Server running on ${localUrl}`);
     log('');
     log('Open Ferdium and it will connect automatically.');
     log('');
-    log('Press Ctrl+C to stop the server.');
+    if (settingsBackupPath) {
+      log('Press Ctrl+C to stop the server and restore the original API URL.');
+    } else {
+      log('Press Ctrl+C to stop the server.');
+    }
     log('');
   });
 }
